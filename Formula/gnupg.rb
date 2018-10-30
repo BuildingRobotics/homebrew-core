@@ -4,13 +4,6 @@ class Gnupg < Formula
   url "https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.10.tar.bz2"
   sha256 "799dd37a86a1448732e339bd20440f4f5ee6e69755f6fd7a73ee8af30840c915"
 
-  bottle do
-    sha256 "7190eeef3372dec0d663f29f59fdc192b4f2b684b00b684405a3fd086b3fddcf" => :mojave
-    sha256 "a6c89bd1575cd29b96454f64f782b321105725a6e35228724f3654403c9a47f4" => :high_sierra
-    sha256 "2ec723b779f410e4facb11c0523fe3ce1a1b31514228d348857e06ae02d70188" => :sierra
-    sha256 "92b34de0e0713e1a5179a5c82ee4aec1579d798a6a2e5772db2716f30d791d9b" => :el_capitan
-  end
-
   depends_on "pkg-config" => :build
   depends_on "sqlite" => :build if MacOS.version == :mavericks
   depends_on "adns"
@@ -23,6 +16,8 @@ class Gnupg < Formula
   depends_on "libusb"
   depends_on "npth"
   depends_on "pinentry"
+
+  patch :p0, :DATA
 
   def install
     system "./configure", "--disable-dependency-tracking",
@@ -76,3 +71,16 @@ class Gnupg < Formula
     end
   end
 end
+
+__END__
+--- scd/apdu.c 2018-10-29 22:05:57.000000000 -0700
++++ scd/apdu.c 2018-10-29 22:06:35.000000000 -0700
+@@ -813,7 +813,7 @@
+
+   err = pcsc_connect (reader_table[slot].pcsc.context,
+                       reader_table[slot].rdrname,
+-                      PCSC_SHARE_EXCLUSIVE,
++                      PCSC_SHARE_SHARED,
+                       PCSC_PROTOCOL_T0|PCSC_PROTOCOL_T1,
+                       &reader_table[slot].pcsc.card,
+                       &reader_table[slot].pcsc.protocol);
